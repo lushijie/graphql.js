@@ -2,17 +2,9 @@
 * @Author: lushijie
 * @Date:   2018-02-28 11:06:28
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-02-28 11:51:38
+* @Last Modified time: 2018-02-28 16:15:03
 */
 let { graphql, buildSchema } = require('graphql');
-
-function getName(age) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve('小明' + age);
-    }, 3000);
-  })
-}
 
 let schema = buildSchema(`
   type Query {
@@ -25,10 +17,10 @@ let schema = buildSchema(`
 let root = {
   name: async (arg) => {
     console.log('接受到参数：', arg);
-    return await getName(arg.age);
+    return 'x' + arg.age;
   },
   sex: () => {
-    return 'Female';
+    return 'f';
   }
 };
 

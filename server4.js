@@ -2,9 +2,17 @@
 * @Author: lushijie
 * @Date:   2018-02-28 11:06:28
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-02-28 15:56:14
+* @Last Modified time: 2018-02-28 16:11:44
 */
 let { graphql, buildSchema } = require('graphql');
+
+function sleep(time) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, time);
+  })
+}
 
 const DBS = [
   {id: 1, name: 'lushijie', sex: 'm'},
@@ -13,36 +21,45 @@ const DBS = [
 ]
 
 let schema = buildSchema(`
+  type Query {
+    UserInfo(id: Int!): User
+  }
 
   type User {
     id: Int,
     name: String,
     sex: String
   }
-
-  type Query {
-    User(id: Int): User
-  }
 `);
+
+class User {
+  constructor(id) {
+    this.id = id;
+  }
+  async name() {
+    let name = null;
+    DBS.forEach((ele) => {
+      if (ele.id === +this.id) {
+        name = ele.name;
+      }
+    });
+    await sleep(2000);
+    return name;
+  }
+}
 
 // 根节点为每个 API 入口端点提供一个 resolver 函数
 let root = {
-  User: async arg => {
-    let res = null;
-    DBS.forEach((ele) => {
-      if (ele.id === +arg.id) {
-        res = ele;
-      }
-    });
-    return res;
+  UserInfo: async (arg) => {
+    return new User(arg.id);
   }
 };
 
 graphql(
   schema,
   `
-    query getUserInfo($id: Int) {
-      Alias:User(id: $id) {
+    query getUserById($id: Int!) {
+      Alias: UserInfo(id: $id) {
         id,
         name,
         sex

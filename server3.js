@@ -2,7 +2,7 @@
 * @Author: lushijie
 * @Date:   2018-02-28 11:06:28
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-02-28 16:03:36
+* @Last Modified time: 2018-02-28 16:10:23
 */
 let { graphql, buildSchema } = require('graphql');
 
@@ -12,54 +12,38 @@ const DBS = [
   {id: 3, name: 'tom', sex: 'm'}
 ]
 
-function getName() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve('小明');
-    }, 3000);
-  })
-}
-
 let schema = buildSchema(`
-  type Query {
-    UserInfo(name: String!): User
-  }
 
   type User {
+    id: Int,
     name: String,
     sex: String
   }
+
+  type Query {
+    User(id: Int): User
+  }
 `);
-
-function getSex() {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve('M');
-    }, 3000);
-  })
-}
-
-class User {
-  constructor(name) {
-    this.name = name;
-  }
-  async sex() {
-    return await getSex();
-  }
-}
 
 // 根节点为每个 API 入口端点提供一个 resolver 函数
 let root = {
-  UserInfo: async (arg) => {
-    return new User(arg.name);
+  User: async arg => {
+    let res = null;
+    DBS.forEach((ele) => {
+      if (ele.id === +arg.id) {
+        res = ele;
+      }
+    });
+    return res;
   }
 };
 
 graphql(
   schema,
   `
-    query getUserByName($name: String!) {
-      UserInfo(name: $name) {
+    query getUserInfo($id: Int) {
+      User(id: $id) {
+        id,
         name,
         sex
       }
@@ -67,7 +51,7 @@ graphql(
   `,
   root,
   {}, // context
-  {name: 'tom'}, // variableValues
+  {id: 1}, // variableValues
   // operationName
 ).then((response) => {
   console.log(response);
