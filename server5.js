@@ -2,13 +2,14 @@
 * @Author: lushijie
 * @Date:   2018-02-28 11:06:28
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-02-28 15:45:56
+* @Last Modified time: 2018-02-28 15:58:22
 */
 let { graphql, buildSchema } = require('graphql');
 
 const DBS = [
-  {id: 1, name: 'lushijie', sex: 'male'},
-  {id: 2, name: 'gexufei', sex: 'female'}
+ {id: 1, name: 'lushijie', sex: 'm'},
+ {id: 2, name: 'gexufei', sex: 'f'},
+ {id: 3, name: 'tom', sex: 'm'}
 ]
 
 let schema = buildSchema(`
@@ -50,7 +51,7 @@ graphql(
   schema,
   `
     mutation Anonymous($param: UserInput) {
-      setUserById(param: $param) {
+      User:setUserById(param: $param) {
         id,
         name,
         sex
