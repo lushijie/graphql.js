@@ -2,7 +2,7 @@
 * @Author: lushijie
 * @Date:   2018-02-28 11:06:28
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-02-28 18:36:22
+* @Last Modified time: 2018-02-28 18:50:23
 */
 let { graphql, buildSchema } = require('graphql');
 
@@ -22,7 +22,8 @@ const DBS = [
 
 let schema = buildSchema(`
   type Query {
-    UserInfo(id: Int!): User
+    UserInfo(id: Int!): User,
+    UserInfos: [User]
   }
 
   type User {
@@ -46,9 +47,9 @@ class User {
     await sleep(2000);
     return name;
   }
-
   sex() {
-    return Math.random() > 0.5 ? 'f1' : 'm1';
+    let random = Math.random();
+    return random > 0.5 ? 'f1' : 'm1';
   }
 }
 
@@ -56,6 +57,9 @@ class User {
 let root = {
   UserInfo: async (arg) => {
     return new User(arg.id);
+  },
+  UserInfos: async arg => {
+    return DBS;
   }
 };
 
@@ -64,6 +68,12 @@ graphql(
   `
     query getUserById($id: Int!) {
       Alias: UserInfo(id: $id) {
+        id,
+        name,
+        sex
+      }
+
+      UserInfos {
         id,
         name,
         sex
