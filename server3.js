@@ -2,7 +2,7 @@
 * @Author: lushijie
 * @Date:   2018-02-28 11:06:28
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-02-28 12:00:08
+* @Last Modified time: 2018-02-28 15:04:37
 */
 let { graphql, buildSchema } = require('graphql');
 
@@ -16,7 +16,7 @@ function getName() {
 
 let schema = buildSchema(`
   type Query {
-    UserInfo(name1: String): User
+    UserInfo(name: String!): User
   }
 
   type User {
@@ -25,22 +25,35 @@ let schema = buildSchema(`
   }
 `);
 
+function getSex() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('M');
+    }, 3000);
+  })
+}
+
+class User {
+  constructor(name) {
+    this.name = name;
+  }
+  async sex() {
+    return await getSex();
+  }
+}
+
 // 根节点为每个 API 入口端点提供一个 resolver 函数
 let root = {
-  UserInfo: (arg) => {
-    console.log('接受到参数：', arg);
-    return {
-      name: arg.name1 || '无姓名',
-      sex: 'Male'
-    }
+  UserInfo: async (arg) => {
+    return new User(arg.name);
   }
 };
 
 graphql(
   schema,
   `
-    query getUserByName($name1: String) {
-      UserInfo(name1: $name1) {
+    query getUserByName($name: String!) {
+      UserInfo(name: $name) {
         name,
         sex
       }
@@ -48,7 +61,7 @@ graphql(
   `,
   root,
   {}, // context
-  {name1: 'lushijie'}, // variableValues
+  {name: 'tom'}, // variableValues
   // operationName
 ).then((response) => {
   console.log(response);
