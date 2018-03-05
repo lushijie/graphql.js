@@ -2,7 +2,7 @@
 * @Author: lushijie
 * @Date:   2018-03-05 15:12:52
 * @Last Modified by:   lushijie
-* @Last Modified time: 2018-03-05 16:23:26
+* @Last Modified time: 2018-03-05 16:55:46
 */
 
 // Schema 与 类型
@@ -10,33 +10,25 @@ let { graphql, buildSchema } = require('graphql');
 
 let schema = buildSchema(`
   # 标量类型 Int, Float, String, Boolean, ID
-  # 对象类型
+
   # 枚举类型
-  # 列表类型
-
-  interface Friends {
-    fname: String,
-    fage: Int
-  }
-
   enum Sex {
     F
     M
   }
 
+  # 对象类型
   type School {
     address: String,
     grade: Int
   }
 
-  type Query implements Friends {
+  type Query {
     name(name: String = "lushijie"): String,  # 字符串, 默认值
     sex: Sex,  # 枚举类型
     age(age: Int): Int,  # 整型
     nickname: [String]!, # 列表并非空
-    school: School,
-    fname: String,
-    fage: Int
+    school: School
   }
 `);
 
@@ -77,7 +69,6 @@ graphql(
         address,
         grade
       },
-      fname,
     }
   `,
   root,
